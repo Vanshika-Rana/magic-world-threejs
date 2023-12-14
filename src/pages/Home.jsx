@@ -2,10 +2,11 @@ import { Canvas } from "@react-three/fiber";
 import Magic from "../models/Magic";
 import Bg from "../models/Bg";
 import { useState } from "react";
+import Info from "../components/Info";
 
 const Home = () => {
 	const [isRotating, setIsRotating] = useState(false);
-    const [currentStage,setCurrentStage] = useState(1);
+	const [currentStage, setCurrentStage] = useState(1);
 	const modelScreenSize = () => {
 		let screenScale = null;
 		let screenPosition = [0, 0, -0.6];
@@ -21,6 +22,10 @@ const Home = () => {
 	const [modelScale, modelPosition, modelRotation] = modelScreenSize();
 	return (
 		<section className='w-full h-screen '>
+            
+			<div className=' absolute top-28 left-0 right-0 z-10 flex items-center justify-center'>
+				{currentStage && <Info currentStage={currentStage} />}
+			</div>
 			<Canvas
 				className={`w-full h-screen bg-transparent ${
 					isRotating ? "cursor-grabbing" : "cursor-grab"
@@ -33,14 +38,15 @@ const Home = () => {
 					groundColor='#000000'
 					intensity={1}
 				/>
-				<Bg isRotating={isRotating}/>
+				<Bg isRotating={isRotating} />
+                
 				<Magic
 					scale={modelScale}
 					position={modelPosition}
 					rotation={modelRotation}
 					isRotating={isRotating}
 					setIsRotating={setIsRotating}
-                    setCurrentStage={setCurrentStage}
+					setCurrentStage={setCurrentStage}
 				/>
 			</Canvas>
 		</section>
