@@ -5,13 +5,14 @@ import { useState } from "react";
 
 const Home = () => {
 	const [isRotating, setIsRotating] = useState(false);
+    const [currentStage,setCurrentStage] = useState(1);
 	const modelScreenSize = () => {
 		let screenScale = null;
-		let screenPosition = [0, 0, -1.3];
+		let screenPosition = [0, 0, -0.6];
 		let screenRotation = [0, 5.7, 0];
 
 		if (window.innerWidth < 768) {
-			screenScale = [0.9, 0.9, 0.9];
+			screenScale = [0.7, 0.7, 0.7];
 		} else {
 			screenScale = [1, 1, 1];
 		}
@@ -32,13 +33,14 @@ const Home = () => {
 					groundColor='#000000'
 					intensity={1}
 				/>
-				<Bg />
+				<Bg isRotating={isRotating}/>
 				<Magic
 					scale={modelScale}
 					position={modelPosition}
 					rotation={modelRotation}
-                    isRotating={isRotating}
-                    setIsRotating={setIsRotating}
+					isRotating={isRotating}
+					setIsRotating={setIsRotating}
+                    setCurrentStage={setCurrentStage}
 				/>
 			</Canvas>
 		</section>

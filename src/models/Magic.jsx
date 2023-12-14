@@ -13,7 +13,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import magicWorld from "../assets/3d/magical_help.glb";
 import { a } from "@react-spring/three";
 
-const Magic = ({ isRotating, setIsRotating, ...props }) => {
+const Magic = ({ isRotating, setIsRotating, setCurrentStage, ...props }) => {
 	const { nodes, materials } = useGLTF(magicWorld);
 	const magicRef = useRef();
 	const { gl, viewport } = useThree();
@@ -47,6 +47,22 @@ const Magic = ({ isRotating, setIsRotating, ...props }) => {
 		}
 	};
 
+	const handleKeyDown = (e) => {
+		if (e.key === "ArrowLeft") {
+			if (!isRotating) setIsRotating(true);
+			magicRef.current.rotation.y += 0.005 * Math.PI;
+			rotationSpeed.current = 0.007;
+		} else if (e.key === "ArrowRight") {
+			if (!isRotating) setIsRotating(true);
+			magicRef.current.rotation.y -= 0.005 * Math.PI;
+			rotationSpeed.current = -0.007;
+		}
+	};
+	const handleKeyUp = (e) => {
+		if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+			setIsRotating(false);
+		}
+	};
 	useFrame(() => {
 		if (!isRotating) {
 			rotationSpeed.current *= dampingFactor;
@@ -71,26 +87,26 @@ const Magic = ({ isRotating, setIsRotating, ...props }) => {
 			 *     always stays within the range of 0 to 2 * Math.PI, which is equivalent to a full
 			 *     circle in radians.
 			 */
-			// const normalizedRotation =
-			// 	((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+			const normalizedRotation =
+				((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
-			// // Set the current stage based on the island's orientation
-			// switch (true) {
-			// 	case normalizedRotation >= 5.45 && normalizedRotation <= 5.85:
-			// 		setCurrentStage(4);
-			// 		break;
-			// 	case normalizedRotation >= 0.85 && normalizedRotation <= 1.3:
-			// 		setCurrentStage(3);
-			// 		break;
-			// 	case normalizedRotation >= 2.4 && normalizedRotation <= 2.6:
-			// 		setCurrentStage(2);
-			// 		break;
-			// 	case normalizedRotation >= 4.25 && normalizedRotation <= 4.75:
-			// 		setCurrentStage(1);
-			// 		break;
-			// 	default:
-			// 		setCurrentStage(null);
-			// }
+			// Set the current stage based on the island's orientation
+			switch (true) {
+				case normalizedRotation >= 5.45 && normalizedRotation <= 5.85:
+					setCurrentStage(4);
+					break;
+				case normalizedRotation >= 0.85 && normalizedRotation <= 1.3:
+					setCurrentStage(3);
+					break;
+				case normalizedRotation >= 2.4 && normalizedRotation <= 2.6:
+					setCurrentStage(2);
+					break;
+				case normalizedRotation >= 4.25 && normalizedRotation <= 4.75:
+					setCurrentStage(1);
+					break;
+				default:
+					setCurrentStage(null);
+			}
 		}
 	});
 	useEffect(() => {
@@ -98,11 +114,14 @@ const Magic = ({ isRotating, setIsRotating, ...props }) => {
 		canvas.addEventListener("pointerdown", handlePointerDown);
 		canvas.addEventListener("pointerup", handlePointerUp);
 		canvas.addEventListener("pointermove", handlePointerMove);
-
+		window.addEventListener("keydown", handleKeyDown);
+		window.addEventListener("keyup", handleKeyUp);
 		return () => {
 			canvas.removeEventListener("pointerdown", handlePointerDown);
 			canvas.removeEventListener("pointerup", handlePointerUp);
 			canvas.removeEventListener("pointermove", handlePointerMove);
+			window.removeEventListener("keydown", handleKeyDown);
+			window.removeEventListener("keyup", handleKeyUp);
 		};
 	}, [gl, handlePointerDown, handlePointerUp, handlePointerMove]);
 	return (
